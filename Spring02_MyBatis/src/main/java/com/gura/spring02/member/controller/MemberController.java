@@ -14,22 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.gura.spring02.member.dao.MemberDao;
 import com.gura.spring02.member.dto.MemberDto;
+import com.gura.spring02.member.service.MemberService;
 
 @Controller
 public class MemberController {
-	@Autowired
-	//Spring bean Container로부터 "new MemberDaoImpl()"이 컴포넌트 스캔을 통해 dao 데이터를 주입받음
-	private MemberDao dao;
 	
-	@RequestMapping("/member/list")
-	public String list(HttpServletRequest request) {
-		// 회원 목록을 얻어와서
-		List<MemberDto> list = dao.getList();
-		// request scop
-		request.setAttribute("list", list);
-		// /WEB-INF/views/member/list.jsp 페이지로 forward 이동해서 응답
-		return "member/list";
-	}
+	@Autowired
+	private MemberService service; //setter method를 통해 주입받기 때문에 private
 	
 	//회원추가 폼 요청 처리
 	@RequestMapping("/member/insertform")
@@ -39,8 +30,7 @@ public class MemberController {
 	
 	@RequestMapping("/member/insert")
 	public String insert(MemberDto dto) {
-		//MemberDao 객체를 이용해서 DB에 저장
-		dao.insert(dto);
+		service.addMember(dto);
 		//view page로 forward 이동해서 응답
 		return "member/insert";
 	}
@@ -52,12 +42,7 @@ public class MemberController {
 	
 	@RequestMapping("/member/updateform")
 	public ModelAndView updateform(ModelAndView mView, int num) {
-		MemberDto dto=dao.getData(num);
-		/*
-		 * 수정할 회원의 정보를 ModelAndView 객체의 addObject(key, value) 메소드를 이용해서 담는다.
-		 * ModelAndView 객체에 담은 값은 결국 HttpServletRequest 객체에 담긴다.(request scope에 담긴다.)
-		 */
-		mView.addObject("dto", dto);
+		service.getMemberInfo(mView, num);
 		//view page의 위치도 ModelAndView 객체에 담아서 리턴해야 한다.
 		mView.setViewName("member/updateform");
 		//모델(data)과 view page의 정보가 모두 담긴 ModelAndView 객체를 리턴해주면
@@ -74,8 +59,7 @@ public class MemberController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/member/update")
 	public String update(@ModelAttribute(value="dto") MemberDto dto) {
-		dao.update(dto);
-		
+		service.updateMember(dto);
 		return "member/update";
 	}
 	
@@ -87,7 +71,15 @@ public class MemberController {
 	
 	@RequestMapping("/member/delete")
 	public String delete(@RequestParam(value = "num", defaultValue = "0")  int num) {
-		dao.delete(num);
+		service.deleteMember(num);
 		return "redirect:/member/list";
+	}
+	
+	@RequestMapping("/member/list")
+	public ModelAndView list(ModelAndView mView) {
+		service.getMemberList(mView);
+		mView.setViewName("member/list");
+		// /WEB-INF/views/member/list.jsp 페이지로 forward 이동해서 응답
+		return mView;
 	}
 }

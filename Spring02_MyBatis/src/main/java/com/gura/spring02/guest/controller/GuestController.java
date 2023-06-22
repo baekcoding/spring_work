@@ -17,7 +17,7 @@ import com.gura.spring02.guest.service.GuestService;
 public class GuestController {
 	
 	@Autowired
-	private GuestService service;
+	private GuestService service; //setter method를 통해 주입받기 때문에 private
 	
 	@RequestMapping("/guest/list")
 	public ModelAndView List(ModelAndView mView) {

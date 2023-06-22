@@ -16,7 +16,7 @@ public class GuestServiceImpl implements GuestService{
 	
 	//서비스는 비즈니스 로직을 처리하기 위해 Dao에 의존한다.
 	@Autowired
-	public GuestDao dao;
+	private GuestDao dao; //setter method를 통해 주입받기 때문에 private
 	
 	@Override
 	public void addGuest(GuestDto dto) {
