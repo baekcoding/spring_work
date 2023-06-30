@@ -75,7 +75,10 @@
 		document.querySelector("#file").addEventListener("change", (e)=>{
 			const form = document.querySelector("#profileForm");
 			
-			ajaxFormPromise(form)
+			fetch(form.action, {
+				method:"post",
+				body:new FormData(form)
+			})
 			.then(res=>res.json())
 			.then(data=>{
 				const imgString = `<img src="${pageContext.request.contextPath}\${data.imagePath}">`;
